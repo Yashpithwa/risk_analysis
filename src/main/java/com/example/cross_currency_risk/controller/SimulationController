@@ -1,0 +1,38 @@
+package com.example.cross_currency_risk.controller;
+
+
+
+import com.example.cross_currency_risk.domain.SimulationResult;
+import com.example.cross_currency_risk.domain.TradeType;
+import com.example.cross_currency_risk.service.SimulationService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/simulate")
+public class SimulationController {
+
+    private final SimulationService simulationService;
+
+    public SimulationController(SimulationService simulationService) {
+        this.simulationService = simulationService;
+    }
+
+    @PostMapping
+    public ResponseEntity<SimulationResult> simulateTrade(
+            @RequestBody Map<String, String> req
+    ) {
+        SimulationResult result = simulationService.simulate(
+                req.get("currency"),
+                Double.parseDouble(req.get("amount")),
+                TradeType.valueOf(req.get("type"))
+        );
+
+        return ResponseEntity.ok(result);
+    }
+}
