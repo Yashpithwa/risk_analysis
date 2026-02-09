@@ -1,0 +1,49 @@
+package com.example.cross_currency_risk.controller;
+
+
+import com.example.cross_currency_risk.domain.Trade;
+import com.example.cross_currency_risk.service.TradeService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/risk/trades")
+public class RiskController {
+
+    private final TradeService tradeService;
+
+    public RiskController(TradeService tradeService) {
+        this.tradeService = tradeService;
+    }
+
+    // View all pending trades
+    @GetMapping("/pending")
+    public ResponseEntity<List<Trade>> getPendingTrades() {
+        return ResponseEntity.ok(tradeService.getPendingTrades());
+    }
+
+    // Approve trade
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<?> approveTrade(@PathVariable Long id) {
+        Trade trade = tradeService.approveTrade(id);
+        return ResponseEntity.ok(Map.of(
+                "tradeId", trade.getId(),
+                "status", trade.getStatus()
+        ));
+    }
+
+    // Reject trade
+    @PostMapping("/{id}/reject")
+    public ResponseEntity<?> rejectTrade(@PathVariable Long id) {
+        Trade trade = tradeService.rejectTrade(id);
+        return ResponseEntity.ok(Map.of(
+                "tradeId", trade.getId(),
+                "status", trade.getStatus()
+        ));
+    }
+}
