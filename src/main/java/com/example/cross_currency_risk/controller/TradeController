@@ -1,0 +1,42 @@
+package com.example.cross_currency_risk.controller;
+
+import com.example.cross_currency_risk.domain.Trade;
+import com.example.cross_currency_risk.domain.TradeType;
+import com.example.cross_currency_risk.service.TradeService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+
+
+@RestController
+@RequestMapping("/api/trader/trades")
+public class TradeController {
+
+    private final TradeService tradeService;
+
+    public TradeController(TradeService tradeService) {
+        this.tradeService = tradeService;
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createTrade(
+            @RequestBody Map<String, String> req,
+            Authentication auth
+    ) {
+        Trade trade = tradeService.createTrade(
+                req.get("currency"),
+                Double.parseDouble(req.get("amount")),
+                TradeType.valueOf(req.get("type")),
+                auth.getName() // email from JWT
+        );
+
+        return ResponseEntity.ok(Map.of(
+                "tradeId", trade.getId(),
+                "status", trade.getStatus(),
+                "createdBy", trade.getCreatedBy()
+        ));
+    }
+}
