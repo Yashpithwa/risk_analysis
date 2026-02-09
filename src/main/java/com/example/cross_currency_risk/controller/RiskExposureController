@@ -1,0 +1,31 @@
+package com.example.cross_currency_risk.controller;
+
+
+import com.example.cross_currency_risk.domain.CurrencyExposure;
+import com.example.cross_currency_risk.repository.CurrencyExposureRepository;
+import jakarta.persistence.GeneratedValue;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+
+
+
+@RestController
+@RequestMapping("/api/risk/exposure")
+public class RiskExposureController {
+
+    private final CurrencyExposureRepository repository;
+
+    public RiskExposureController(CurrencyExposureRepository repository) {
+        this.repository = repository;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CurrencyExposure>> getAllExposure() {
+        return ResponseEntity.ok(repository.findAll());
+    }
+}
