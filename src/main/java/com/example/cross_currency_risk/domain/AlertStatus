@@ -1,0 +1,6 @@
+package com.example.cross_currency_risk.domain;
+
+public enum AlertStatus {
+    OPEN,
+    CLOSED
+}
