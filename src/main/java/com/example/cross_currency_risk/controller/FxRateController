@@ -1,0 +1,29 @@
+package com.example.cross_currency_risk.controller;
+
+
+
+import com.example.cross_currency_risk.domain.FxRateResponse;
+import com.example.cross_currency_risk.service.FxRateService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/fx")
+public class FxRateController {
+
+    private final FxRateService fxRateService;
+
+    public FxRateController(FxRateService fxRateService) {
+        this.fxRateService = fxRateService;
+    }
+
+    @GetMapping("/rates")
+    public ResponseEntity<FxRateResponse> getRates() {
+        return ResponseEntity.ok(fxRateService.getRates());
+    }
+
+    @GetMapping("/{currency}")
+    public ResponseEntity<Double> getRate(@PathVariable String currency) {
+        return ResponseEntity.ok(fxRateService.getRate(currency));
+    }
+}
