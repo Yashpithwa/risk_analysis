@@ -1,0 +1,26 @@
+
+
+    @Column(nullable = false)
+    private double exposureUsd = 0.0;
+
+
+    public CurrencyExposure() {}
+
+    public CurrencyExposure(String baseCurrency, double exposureUsd) {
+        this.baseCurrency = baseCurrency;
+        this.exposureUsd = exposureUsd;
+    }
+
+    public Long getId() { return id; }
+    public String getBaseCurrency() { return baseCurrency; }
+    public double getExposureUsd() { return exposureUsd; }
+
+    public void setBaseCurrency(String baseCurrency) {
+        this.baseCurrency = baseCurrency;
+    }
+
+    public void setExposureUsd(double exposureUsd) {
+        this.exposureUsd = exposureUsd;
+    }
+}
+
