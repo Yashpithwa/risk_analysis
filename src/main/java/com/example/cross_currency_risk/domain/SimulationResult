@@ -1,0 +1,31 @@
+package com.example.cross_currency_risk.domain;
+
+
+public class SimulationResult {
+
+    private String currency;
+    private double currentExposure;
+    private double simulatedExposure;
+    private double limit;
+    private boolean breached;
+
+    public SimulationResult(
+            String currency,
+            double currentExposure,
+            double simulatedExposure,
+            double limit,
+            boolean breached
+    ) {
+        this.currency = currency;
+        this.currentExposure = currentExposure;
+        this.simulatedExposure = simulatedExposure;
+        this.limit = limit;
+        this.breached = breached;
+    }
+
+    public String getCurrency() { return currency; }
+    public double getCurrentExposure() { return currentExposure; }
+    public double getSimulatedExposure() { return simulatedExposure; }
+    public double getLimit() { return limit; }
+    public boolean isBreached() { return breached; }
+}
