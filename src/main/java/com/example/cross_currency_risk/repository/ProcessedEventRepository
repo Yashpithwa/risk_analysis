@@ -1,0 +1,9 @@
+package com.example.cross_currency_risk.repository;
+
+import com.example.cross_currency_risk.domain.ProcessedEvent;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ProcessedEventRepository  extends JpaRepository<ProcessedEvent,Long> {
+
+    boolean existsByTradeId(Long tradeId);
+}
