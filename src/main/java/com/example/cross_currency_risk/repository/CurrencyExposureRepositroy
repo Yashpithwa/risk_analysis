@@ -1,0 +1,13 @@
+
+package com.example.cross_currency_risk.repository;
+
+import com.example.cross_currency_risk.domain.CurrencyExposure;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface CurrencyExposureRepository
+        extends JpaRepository<CurrencyExposure, Long> {
+
+    Optional<CurrencyExposure> findByBaseCurrency(String baseCurrency);
+}
