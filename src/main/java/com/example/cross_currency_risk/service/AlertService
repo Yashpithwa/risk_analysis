@@ -1,0 +1,33 @@
+package com.example.cross_currency_risk.service;
+
+import com.example.cross_currency_risk.domain.Alert;
+import com.example.cross_currency_risk.repository.AlertRepository;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AlertService {
+
+    private final AlertRepository repository;
+    private final AlertIndexService alertIndexService;
+    public AlertService(AlertRepository repository,AlertIndexService alertIndexService) {
+        this.repository = repository;
+        this.alertIndexService=alertIndexService;
+    }
+
+    public void createUsdLimitBreachAlert(
+            String currency,
+            double exposureUsd,
+            double limit
+    ) {
+        Alert alert = new Alert();
+        alert.setCurrency(currency);
+        alert.setExposure(exposureUsd);
+        alert.setLimitValue(limit);
+        alert.setMessage("USD risk limit breached");
+
+      Alert saved=  repository.save(alert);
+
+      alertIndexService.index(saved);
+
+    }
+}
