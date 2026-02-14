@@ -1,0 +1,30 @@
+package com.example.cross_currency_risk.service;
+
+
+import com.example.cross_currency_risk.domain.Alert;
+import com.example.cross_currency_risk.search.AlertDocument;
+import com.example.cross_currency_risk.search.AlertSearchRepository;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AlertIndexService {
+
+    private final AlertSearchRepository alertSearchRepository;
+
+    public AlertIndexService(AlertSearchRepository alertSearchRepository){
+        this.alertSearchRepository=alertSearchRepository;
+    }
+
+    public void index(Alert alert){
+        AlertDocument doc = new AlertDocument(
+                alert.getId(),
+                alert.getCurrency(),
+                alert.getExposure(),
+                alert.getLimitValue(),
+                alert.getMessage(),
+                alert.getCreatedAt()
+        );
+
+        alertSearchRepository.save(doc);
+    }
+}
