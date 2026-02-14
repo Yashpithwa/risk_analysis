@@ -1,0 +1,29 @@
+package com.example.cross_currency_risk.service;
+
+
+import com.example.cross_currency_risk.domain.CurrencyExposure;
+import com.example.cross_currency_risk.domain.RiskLimit;
+
+import com.example.cross_currency_risk.repository.RiskLimitRepository;
+import org.springframework.stereotype.Service;
+
+
+
+@Service
+public class RiskLimitService {
+
+    private final RiskLimitRepository repository;
+
+    public RiskLimitService(RiskLimitRepository repository) {
+        this.repository = repository;
+    }
+
+    public RiskLimit getLimitForCurrency(String currency) {
+        return repository.findByCurrency(currency).orElse(null);
+    }
+
+    public boolean isBreachedUsd(double exposureUsd, RiskLimit limit) {
+        return limit != null &&
+                Math.abs(exposureUsd) > limit.getMaxExposure();
+    }
+}
