@@ -1,0 +1,47 @@
+package com.example.cross_currency_risk.service;
+
+
+
+import com.example.cross_currency_risk.domain.FxRateResponse;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.time.Duration;
+
+@Service
+public class FxRateService {
+
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    private static final String FX_KEY = "FX_RATES_FULL";
+    private static final String FX_API =
+            "https://api.frankfurter.app/latest?from=USD";
+
+    public FxRateService(RedisTemplate<String, Object> redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
+
+    public FxRateResponse getRates() {
+
+        Object cached = redisTemplate.opsForValue().get(FX_KEY);
+        if (cached != null) {
+            return (FxRateResponse) cached;
+        }
+
+        FxRateResponse response =
+                restTemplate.getForObject(FX_API, FxRateResponse.class);
+
+        redisTemplate.opsForValue()
+                .set(FX_KEY, response, Duration.ofMinutes(10));
+
+        return response;
+    }
+
+    public double getRate(String currency) {
+        return getRates()
+                .getRates()
+                .getOrDefault(currency.toUpperCase(), 1.0);
+    }
+}
