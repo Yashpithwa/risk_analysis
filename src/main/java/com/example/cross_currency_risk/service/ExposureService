@@ -1,0 +1,79 @@
+public class ExposureService {
+
+    private static final String BASE = "USD";
+
+    private final CurrencyExposureRepository exposureRepository;
+    private final FxRateService fxRateService;
+    private final RiskLimitService riskLimitService;
+    private final AlertService alertService;
+
+    public ExposureService(
+            CurrencyExposureRepository exposureRepository,
+            FxRateService fxRateService,
+            RiskLimitService riskLimitService,
+            AlertService alertService
+    ) {
+        this.exposureRepository = exposureRepository;
+        this.fxRateService = fxRateService;
+        this.riskLimitService = riskLimitService;
+        this.alertService = alertService;
+    }
+
+    public void applyTrade(Trade trade) {
+
+        CurrencyExposure exposure = exposureRepository
+                .findByBaseCurrency(BASE)
+                .orElse(new CurrencyExposure(BASE, 0.0));
+
+        // 🔥 FX conversion → USD (FIXED)
+        double rate = fxRateService.getRate(trade.getCurrency());
+        double amountInUsd = trade.getAmount() * rate;
+
+        double updatedExposure =
+                trade.getType() == TradeType.BUY
+                        ? exposure.getExposureUsd() + amountInUsd
+                        : exposure.getExposureUsd() - amountInUsd;
+
+        exposure.setExposureUsd(updatedExposure);
+        exposureRepository.save(exposure);
+
+        // 🔥 Risk check
+        RiskLimit limit = riskLimitService.getLimitForCurrency(BASE);
+
+        if (limit != null &&
+                riskLimitService.isBreachedUsd(updatedExposure, limit)) {
+
+            alertService.createUsdLimitBreachAlert(
+                    BASE,
+                    updatedExposure,
+                    limit.getMaxExposure()
+            );
+        }
+    }
+
+    public void applyTradeEvent(TradeApprovedEvent event){
+
+        CurrencyExposure exposure=exposureRepository.findByBaseCurrency(BASE)
+                .orElse(new CurrencyExposure(BASE,0));
+
+        double rate = fxRateService.getRate(event.getCurrency());
+        double amountUsd = event.getAmount()*rate;
+
+        double updated=event.getType()==TradeType.BUY
+                ? exposure.getExposureUsd()+amountUsd
+                : exposure.getExposureUsd()-amountUsd;
+
+        exposure.setExposureUsd(updated);
+        exposureRepository.save(exposure);
+
+        RiskLimit limit = riskLimitService.getLimitForCurrency(BASE);
+
+        if(riskLimitService.isBreachedUsd(updated,limit)){
+            alertService.createUsdLimitBreachAlert(
+                    BASE,
+                    updated,
+                    limit.getMaxExposure()
+            );
+        }
+    }
+}
